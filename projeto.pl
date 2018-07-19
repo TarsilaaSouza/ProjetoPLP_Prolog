@@ -9,8 +9,7 @@ menu:-
     controller(resposta).
     
 controller(1):- 
-	writeln("Informe seu nome:"),
-	read(nome),
+	shell("clear"),
 	writeln("Escolha um dos niveis:"}),
 	writeln("1. Iniciante"),
 	writeln("2. Intermediario"),
@@ -18,21 +17,18 @@ controller(1):-
 	read(nivel),
 	acao(nivel).
 
-acao(1):-
+acao(1):- criaMatriz(4, 4, M), writeln(M).
 
-acao(2):- 
+acao(2):- criaMatriz(6, 6, M), writeln(M).
 
-acao(3):- 
+acao(3):- criaMatriz(8, 8, M), writeln(M).
+
+acao(_) :- controller.
 
 main:-
 	menu,
 	halt(0).
 
-menu:-
-	shell("clear"),
-	writeln(" Escolha uma opção:\n 1. Iniciar Jogo\n 2. Ranking\n 3. Sair"),
-	leitura(X),
-	opcao(M).
 
 leitura(X) :-
 	read_line_to_codes(user_input, Z),
@@ -43,17 +39,6 @@ opcao(1) :- jogar.
 opcao(2) :- ranking.
 opcao(3) :- halt(0).
 opcao(_) :- menu.
-
-menuNivel:-
-	shell("clear"),
-	writeln("Escolha um dos niveis:\n 1. Iniciante\n 2. Intermediario\n 3. Avancado\n"),
-	leitura(X),
-	nivel(X).
-
-nivel(1):- criaMatriz(4, 4, M), writeln(M).
-nivel(2):- criaMatriz(6, 6, M), writeln(M).
-nivel(3):- criaMatriz(8, 8, M), writeln(M).
-nivel(_) :- menuNivel.
 
 jogar :-
 	menuNivel.
