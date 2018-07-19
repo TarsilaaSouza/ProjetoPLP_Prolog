@@ -16,6 +16,10 @@ controller(1):-
 	writeln("3. Avancado"),
 	read(nivel),
 	acao(nivel).
+	
+controller(2) :- ranking.
+controller(3) :- halt(0).
+controller(_) :- menu.
 
 acao(1):- criaMatriz(4, 4, M), writeln(M).
 
@@ -34,11 +38,6 @@ leitura(X) :-
 	read_line_to_codes(user_input, Z),
 	string_to_atom(Z, A),
 	atom_number(A, X).
-
-opcao(1) :- jogar.
-opcao(2) :- ranking.
-opcao(3) :- halt(0).
-opcao(_) :- menu.
 
 jogar :-
 	menuNivel.
