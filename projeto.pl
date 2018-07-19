@@ -1,24 +1,51 @@
-matrizIniciante = ([
-	[4,6,7,2],
-	[1,3,5,2],
-	[4,5,6,3],
-	[1,8,8,7]]).
-	
-matrizIntermediaria= ([
-	[18,5,8,2,4,9],
-	[5,16,12,7,3,10],
-	[1,17,8,6,11,18],
-	[10,3,17,14,4,13],
-	[7,15,2,11,16,6],
-	[12,14,9,1,15,13]]).
+:- initialization(main).
 
-matrizAvancada = ([
-	[10,4,9,2,14,14,21,26],
-	[23,17,29,11,20,1,30,30],
-	[4,27,17,5,24,29,6,6],
-	[26,28,11,8,13,16,12,31],
-	[21,22,2,19,19,1,25,25],
-	[3,27,10,32,24,15,7,12],
-	[23,18,28,5,16,15,31,13],
-	[9,22,3,18,20,32,7,8]]).
+main:-
+	menu,
+	halt(0).
+
+menu:-
+	shell("clear"),
+	writeln(" Escolha uma opção:\n 1. Iniciar Jogo\n 2. Ranking\n 3. Sair"),
+	leitura(X),
+	opcao(M).
+
+leitura(X) :-
+	read_line_to_codes(user_input, Z),
+	string_to_atom(Z, A),
+	atom_number(A, X).
+
+opcao(1) :- jogar.
+opcao(2) :- ranking.
+opcao(3) :- halt(0).
+opcao(_) :- menu.
+
+menuNivel:-
+	shell("clear"),
+	writeln("Escolha um dos niveis:\n 1. Iniciante\n 2. Intermediario\n 3. Avancado\n"),
+	leitura(X),
+	nivel(X).
+
+nivel(1):- criaMatriz(4, 4, M), writeln(M).
+nivel(2):- criaMatriz(6, 6, M), writeln(M).
+nivel(3):- criaMatriz(8, 8, M), writeln(M).
+nivel(_) :- menuNivel.
+
+jogar :-
+	menuNivel.
+
+ranking :-
+	writeln("Nadinha").
+
+criaMatriz(0, _, []).
+criaMatriz(TMatriz, TLinha, Matriz):- T is TMatriz-1, criaLista(TLinha, M), criaMatriz(T, TLinha, Retorno), addElemento(Retorno, M, Matriz).
+
+addElemento(Matriz, Elemento, [Elemento|Matriz]).
+
+criaLista(0, []).
+criaLista(Tamanho, Matriz) :- T  is Tamanho-1, criaLista(T, M), preencheArray(M, Matriz). 
+
+preencheArray(M, ["X"|M]).
+
+caracteres([ "◒", "◕", "◔", "◐", "☎", "☂", "☀", "☢", "☣", "☹", "☯", "☩", "☠", "☸", "♛", "♚", "♜", "♝", "♞", "♡", "✿", "✻", "⊳", "⊖", "➸", "➱", "❤" , "✸", "✖", "✔", "♫", "♬", "∞", "✂", "✈"]).
 	
