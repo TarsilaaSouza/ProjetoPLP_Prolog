@@ -29,6 +29,27 @@ acao(3):- criaMatriz(8, 8, M), writeln(M).
 
 acao(_) :- controller.
 
+getElemento(0, [H|_], H):- !.
+getElemento(INDICE, [_|T), E):- 
+	I is INDICE - 1,
+	getElemento(I, T, E).
+	
+getElementoMatriz(LINHA, COLUNA, [H[T],E):-
+	getElemento(LINHA,[H|T], LISTA),
+	getElemento(COLUNA, LISTA, INDICE1),
+	E is INDICE1.
+
+compara(LINHA1, COLUNA1, LINHA2, COOLUNA2, (H|T):-
+	getElementoMatriz(LINHA1, COLUNA2, [H|T], E1),
+	getElementoMatriz(LINHA2, COLUNA2, [H|T], E2),
+	
+	E1 == E2.
+imprime([]):- !S.
+imprime([H|T]):-
+
+	writeln(H),
+	imprime(T).
+
 main:-
 	menu,
 	halt(0).
