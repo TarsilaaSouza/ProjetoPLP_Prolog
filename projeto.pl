@@ -49,3 +49,17 @@ preencheArray(M, ["X"|M]).
 
 caracteres([ "◒", "◕", "◔", "◐", "☎", "☂", "☀", "☢", "☣", "☹", "☯", "☩", "☠", "☸", "♛", "♚", "♜", "♝", "♞", "♡", "✿", "✻", "⊳", "⊖", "➸", "➱", "❤" , "✸", "✖", "✔", "♫", "♬", "∞", "✂", "✈"]).
 	
+getElement(0, [H|_], H):- !.
+getElement(INDICE, [_|T], E):- 
+	I is INDICE-1,
+	getElement(I, T, E).
+
+getElementMatrix(LINHA, COLUNA, [H|T], E):-
+	getElement(LINHA, [H|T], LISTA),
+	getElement(COLUNA, LISTA, AUX),
+	E is AUX.
+	
+compara(LINHA1, COLUNA1, LINHA2, COLUNA2, [H|T]):-
+	getElementMatrix(LINHA1, COLUNA1, [H|T], E1),
+	getElementMatrix(LINHA2, COLUNA2, [H|T], E2),
+	E1 == E2.
