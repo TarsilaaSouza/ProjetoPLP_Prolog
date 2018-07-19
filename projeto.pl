@@ -1,5 +1,29 @@
 :- initialization(main).
 
+menu:-
+	writeln("Menu:"),
+    writeln("1. Iniciar Jogo"),
+    writeln("2. Ranking"),
+    writeln("3. Sair"),
+    read(resposta),
+    controller(resposta).
+    
+controller(1):- 
+	writeln("Informe seu nome:"),
+	read(nome),
+	writeln("Escolha um dos niveis:"}),
+	writeln("1. Iniciante"),
+	writeln("2. Intermediario"),
+	writeln("3. Avancado"),
+	read(nivel),
+	acao(nivel).
+
+acao(1):-
+
+acao(2):- 
+
+acao(3):- 
+
 main:-
 	menu,
 	halt(0).
