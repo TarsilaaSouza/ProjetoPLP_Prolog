@@ -1,59 +1,35 @@
 :- initialization(main).
 
 menu:-
-	writeln("Menu:"),
-    writeln("1. Iniciar Jogo"),
-    writeln("2. Ranking"),
-    writeln("3. Sair"),
-    read(resposta),
-    controller(resposta).
-    
-controller(1):- 
 	shell("clear"),
-	writeln("Escolha um dos niveis:"}),
-	writeln("1. Iniciante"),
-	writeln("2. Intermediario"),
-	writeln("3. Avancado"),
-	read(nivel),
-	acao(nivel).
-	
-controller(2) :- ranking.
-controller(3) :- halt(0).
-controller(_) :- menu.
+	writeln(" Escolha uma opção:\n 1. Iniciar Jogo\n 2. Ranking\n 3. Sair"),
+	leitura(X),
+	opcao(M).
 
-acao(1):- criaMatriz(4, 4, M), writeln(M).
+opcao(1) :- jogar.
+opcao(2) :- ranking.
+opcao(3) :- halt(0).
+opcao(_) :- menu.
 
-acao(2):- criaMatriz(6, 6, M), writeln(M).
+menuNivel:-
+	shell("clear"),
+	writeln("Escolha um dos niveis:\n 1. Iniciante\n 2. Intermediario\n 3. Avancado\n"),
+	leitura(X),
+	nivel(X).
 
-acao(3):- criaMatriz(8, 8, M), writeln(M).
+nivel(1):- criaMatriz(4, 4, M), writeln(M).
+nivel(2):- criaMatriz(6, 6, M), writeln(M).
+nivel(3):- criaMatriz(8, 8, M), writeln(M).
+nivel(_) :- menuNivel.
 
-acao(_) :- controller.
-
-getElemento(0, [H|_], H):- !.
-getElemento(INDICE, [_|T), E):- 
-	I is INDICE - 1,
-	getElemento(I, T, E).
-	
-getElementoMatriz(LINHA, COLUNA, [H[T],E):-
-	getElemento(LINHA,[H|T], LISTA),
-	getElemento(COLUNA, LISTA, INDICE1),
-	E is INDICE1.
-
-compara(LINHA1, COLUNA1, LINHA2, COOLUNA2, (H|T):-
-	getElementoMatriz(LINHA1, COLUNA2, [H|T], E1),
-	getElementoMatriz(LINHA2, COLUNA2, [H|T], E2),
-	
-	E1 == E2.
 imprime([]):- !S.
 imprime([H|T]):-
-
 	writeln(H),
 	imprime(T).
 
 main:-
 	menu,
 	halt(0).
-
 
 leitura(X) :-
 	read_line_to_codes(user_input, Z),
@@ -92,3 +68,16 @@ compara(LINHA1, COLUNA1, LINHA2, COLUNA2, [H|T]):-
 	getElementMatrix(LINHA1, COLUNA1, [H|T], E1),
 	getElementMatrix(LINHA2, COLUNA2, [H|T], E2),
 	E1 == E2.
+
+numRandom(F, X):- random(0, F, X).
+
+sortearCaracteres(0, _, _, []) :- !.
+sortearCaracteres(Quantidade, Caracteres, Tamanho, Array) :- 
+	Q is Quantidade-1, 
+	Z is Tamanho-1,
+	numRandom(Tamanho, N),  
+	pegarElemPorIndice(N, Caracteres, C), 
+	adicionarElementoArray(Retorno, C, Array),
+	removerElemento(C, Caracteres, Novo), 
+	sortearCaracteres(Q, Novo, Z, Retorno).
+
