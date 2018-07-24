@@ -81,3 +81,25 @@ sortearCaracteres(Quantidade, Caracteres, Tamanho, Array) :-
 	removerElemento(C, Caracteres, Novo), 
 	sortearCaracteres(Q, Novo, Z, Retorno).
 
+removerElemento(X, [X|T], T).
+removerElemento(X, [H|T], [H|R]):- removerElemento(X, T, R).
+
+inserirElemPorIndArray(Elemento, 0, [H|T], [Elemento|T]).
+inserirElemPorIndArray(Elemento, Posicao, [H|T], Retorno) :- 
+	Ind is Posicao-1, 
+	inserirElemPorIndArray(Elemento, Ind, T, R), 
+	Retorno = [H|R].
+
+inserirElemMatriz(Linha, Coluna, Elemento, Matriz, Retorno) :- 
+	pegarElemPorIndice(Linha, Matriz, LinhaX),
+	inserirElemPorIndArray(Elemento, Coluna, LinhaX, NovoArray),
+	inserirElemPorIndArray(NovoArray, Linha, Matriz, Retorno).
+
+gerarPosicoes(0,0, _, [(0,0)]).
+gerarPosicoes(Linha, -1, Tamanho, N):- 
+	L is Linha - 1, 
+	gerarPosicoes(L, Tamanho, Tamanho, N).
+gerarPosicoes(Linha, Coluna, Tamanho, N) :- 
+	C is Coluna -1, 
+	gerarPosicoes(Linha, C, Tamanho, R), 
+	N =  [(Linha, Coluna)|R].
