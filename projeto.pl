@@ -103,3 +103,25 @@ gerarPosicoes(Linha, Coluna, Tamanho, N) :-
 	C is Coluna -1, 
 	gerarPosicoes(Linha, C, Tamanho, R), 
 	N =  [(Linha, Coluna)|R].
+
+gerarMatrizJogo(Tamanho, MatrizJogo):-
+	caracteres(ListaCaracteres),
+	criarMatriz(Tamanho, Tamanho, Matriz),
+	QntCaracteres is (Tamanho*Tamanho)/2,
+	gerarCaracteres(QntCaracteres, ListaCaracteres, 34, Caracteres),
+	Indice is Tamanho-1,
+	gerarPosicoes(Indice, Indice, Indice, ListaPosicoes),
+	preencherMatrizJogo(Caracteres, ListaPosicoes, Matriz, MatrizJogo).
+
+preencherMatrizJogo(_, [], Matriz, Matriz).
+preencherMatrizJogo([Caracter|Caracteres], ListaPosicoes, Matriz, MatrizJogoFinal):-
+	inserirParCaracteres(Caracter, ListaPosicoes, Matriz, NovasListaPosicoes, MatrizJogo),
+	inserirParCaracteres(Caracter, NovasListaPosicoes, MatrizJogo, NovasListaPosicoesDois, MatrizJogoDois),
+	preencherMatrizJogo(Caracteres, NovasListaPosicoesDois, MatrizJogoDois, MatrizJogoFinal).
+
+inserirParCaracteres(Caracter, ListaPosicoes, Matriz, NovasListaPosicoes, MatrizJogo):-
+	length(ListaPosicoes, Tamanho),
+	numRandom(Tamanho, Num),
+	pegarElementoPorIndice(Num, ListaPosicoes, (Linha, Coluna)),
+	inserirElementoMatriz(Linha, Coluna, Caracter, Matriz, MatrizJogo),
+	removerElemento((Linha, Coluna), ListaPosicoes, NovasListaPosicoes).
