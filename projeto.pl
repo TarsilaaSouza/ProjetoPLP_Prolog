@@ -126,6 +126,15 @@ inserirParCaracteres(Caracter, ListaPosicoes, Matriz, NovasListaPosicoes, Matriz
 	inserirElementoMatriz(Linha, Coluna, Caracter, Matriz, MatrizJogo),
 	removerElemento((Linha, Coluna), ListaPosicoes, NovasListaPosicoes).
 	
-posicaoValida(Linha, Coluna, [H|T]) :-
-	getElementMatrix(Linha, Coluna, [H|T], E),
-	E == "X".
+posicaoValida(LINHA, COLUNA, [H|T]):-
+	getElementMatrix(LINHA, COLUNA, [H|T], E),
+	E == 88.
+
+modificaMatriz(LINHA, COLUNA, [H|T], EN):-
+	getElemento(LINHA, [H|T], LISTA),
+	modifica(LISTA, COLUNA, EN).
+
+modifica([H|_], 0, EN):- H is EN.
+modifica([_|T], INDICE, EN):-
+	I is INDICE-1,
+	troca(T, I, EN).
