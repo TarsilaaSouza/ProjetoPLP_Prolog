@@ -17,16 +17,21 @@ menuNivel:-
 	leitura(X),
 	nivel(X).
 
-nivel(1):- criaMatriz(4, 4, M), writeln(M).
-nivel(2):- criaMatriz(6, 6, M), writeln(M).
-nivel(3):- criaMatriz(8, 8, M), writeln(M).
+nivel(1):- criaMatriz(4, 4, M), imprime(M).
+nivel(2):- criaMatriz(6, 6, M), imprime(M).
+nivel(3):- criaMatriz(8, 8, M), imprime(M).
 nivel(_) :- menuNivel.
 
-imprime([]):- !S.
+imprime([]):- writeln("").
 imprime([H|T]):-
-	writeln(H),
+	imprimeLinha(H),
 	imprime(T).
 
+imprimeLinha([]) :- writeln("").
+imprimeLinha([H|T]) :-
+	write(H),
+	write(" "),
+	imprimeLinha(T).
 main:-
 	menu,
 	halt(0).
