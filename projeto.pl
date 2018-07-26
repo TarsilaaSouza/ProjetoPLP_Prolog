@@ -146,3 +146,16 @@ modifica(X,0,[_|L],[X|L]).
 modifica(X,N,[C|L],[C|R]) :- 
 	N1 is N-1, 
 	modifica(X,N1,L,R).
+
+iniciarJogo(NIVEL, TAMANHO, NOME):-
+	MatrizUsuario = geraMatrizJogo(TAMANHO)
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
