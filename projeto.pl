@@ -4,7 +4,7 @@ menu:-
 	shell("clear"),
 	writeln(" Escolha uma opção:\n 1. Iniciar Jogo\n 2. Ranking\n 3. Sair"),
 	leitura(X),
-	opcao(M).
+	opcao(X).
 
 opcao(1) :- jogar.
 opcao(2) :- ranking.
@@ -130,11 +130,14 @@ posicaoValida(LINHA, COLUNA, [H|T]):-
 	getElementMatrix(LINHA, COLUNA, [H|T], E),
 	E == 88.
 
-modificaMatriz(LINHA, COLUNA, [H|T], EN):-
-	getElemento(LINHA, [H|T], LISTA),
-	modifica(LISTA, COLUNA, EN).
-
-modifica([H|_], 0, EN):- H is EN.
-modifica([_|T], INDICE, EN):-
-	I is INDICE-1,
-	troca(T, I, EN).
+modificaMatriz(LINHA, COLUNA, [H|T], MatrizJogo, EN):-
+	getElementMatrix(LINHA, COLUNA, MatrizJogo, ECod),
+	string_to_list(E, [ECod]),
+	getElement(LINHA, [H|T], LISTA),
+	modifica(E, COLUNA, LISTA, EN1),
+	modifica(EN1, LINHA, [H|T], EN).
+	
+modifica(X,0,[_|L],[X|L]).
+modifica(X,N,[C|L],[C|R]) :- 
+	N1 is N-1, 
+	modifica(X,N1,L,R).
