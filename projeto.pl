@@ -24,12 +24,12 @@ nivel(_) :- menuNivel.
 
 iniciarJogo(Tamanho, Nivel):-
     writeln("Digite seu nome."),
-    read_line_to_codes(user_input,Nome),
+    read_line_to_string(user_input,Nome),
     criaMatriz(Tamanho, Tamanho, MatrizUsuario),
     gerarMatrizJogo(Tamanho, MatrizJogo),
     pares(Tamanho, P),
     segundos(T),
-    jogo(P, Tamanho, Nivel, 0, MatrizUsuario, MatrizJogo, T, Nome) -> writeln("perdeu..."); writeln("ganhou."),
+    jogo(P, Tamanho, Nivel, 0, MatrizUsuario, MatrizJogo, T, Nome),
     halt(0).
 
 % Imprime a matriz do Usuario.
@@ -71,9 +71,6 @@ leitura(X) :-
 
 jogar :-
 	menuNivel.
-
-ranking :-
-	writeln("Nadinha").
 
 % Retorna uma Matriz preenchida com X.
 criaMatriz(0, TLinha, []):-!.
@@ -247,15 +244,15 @@ pares(Tamanho, Pares):-
 % Lógica do jogo.
 jogo(Pares, Tamanho, Nivel, ParesEcontrados, MatrizUsuario, MatrizSistema, Tempo, Nome):-
     contarSegundos(Tempo, Agora),
-    Agora > 180, !.
+    Agora > 180, 
+    writeln("O tempo acabou, você perdeu."), !.
 jogo(Pares, Tamanho, Nivel, ParesEcontrados, MatrizUsuario, MatrizSistema, Tempo, Nome):-
     ParesEcontrados =:= Pares,
     contarSegundos(Tempo, Agora),
     Temp is floor(Agora),
-    writeln(Temp),
-    gravaRanking(Nome, Temp).
+    gravaRanking(Nome, Temp),
+    writeln("Parabéns você ganhou !!!!").
 jogo(Pares, Tamanho, Nivel, ParesEcontrados, MatrizUsuario, MatrizSistema, Tempo, Nome):-
-    matrizRepresentacao(MatrizSistema, Tamanho),
     matrizRepresentacao(MatrizUsuario, Tamanho),
     getPares(Tamanho, MatrizUsuario, MatrizSistema, (Linha1, Coluna1), MatrizModificada),
     shell("clear"),
@@ -266,7 +263,6 @@ jogo(Pares, Tamanho, Nivel, ParesEcontrados, MatrizUsuario, MatrizSistema, Tempo
     compara(Linha1, Coluna1, Linha2, Coluna2, MatrizSistema) ->  
     shell("clear"),  
     ParesEcontradosAgora is (ParesEcontrados + 1),
-    writeln(ParesEcontradosAgora),
     jogo(Pares, Tamanho, Nivel, ParesEcontradosAgora, MatrizModificada2, MatrizSistema, Tempo, Nome);
     segundos(T),
     writeln("Par escolhido diferente!!!"),
@@ -305,7 +301,7 @@ gravaRanking(Nome, Tempo) :-
     NovoArquivo = "" ,
     gerarNovoArquivo(Nome, Tempo, Str, 0,false, NovoArquivo, NovoArquivoGravar),
     close(Str),
-    gravaArquivo(NovoArquivoGravar); 
+    gravaArquivo(NovoArquivoGravar);
     open('ranking.txt', write, Str),
     resultadoStringRanking(Nome, Tempo, NomeTempo),
     write(Str, NomeTempo),
