@@ -1,4 +1,4 @@
-:- initialization(main).
+:-initialization(menu).
 
 menu:-
 	shell("clear"),
@@ -7,7 +7,7 @@ menu:-
 	opcao(X).
 
 opcao(1) :- jogar.
-opcao(2) :- ranking.
+opcao(2) :- rankingPrint.
 opcao(3) :- halt(0).
 opcao(_) :- menu.
 
@@ -17,10 +17,20 @@ menuNivel:-
 	leitura(X),
 	nivel(X).
 
-nivel(1):- criaMatriz(4, 4, M), imprime(M).
-nivel(2):- criaMatriz(6, 6, M), imprime(M).
-nivel(3):- criaMatriz(8, 8, M), imprime(M).
+nivel(1):- iniciarJogo(4, 1).
+nivel(2):- iniciarJogo(6, 2).
+nivel(3):- iniciarJogo(8, 3).
 nivel(_) :- menuNivel.
+
+iniciarJogo(Tamanho, Nivel):-
+    writeln("Digite seu nome."),
+    read_line_to_codes(user_input,Nome),
+    criaMatriz(Tamanho, Tamanho, MatrizUsuario),
+    gerarMatrizJogo(Tamanho, MatrizJogo),
+    pares(Tamanho, P),
+    segundos(T),
+    jogo(P, Tamanho, Nivel, 0, MatrizUsuario, MatrizJogo, T, Nome) -> writeln("perdeu..."); writeln("ganhou."),
+    halt(0).
 
 % Imprime a matriz do Usuario.
 imprime(_, [], M, MatrizString):- MatrizString = M, !.
@@ -52,9 +62,6 @@ primeiraLinha(4, "  1 2 3 4\n").
 primeiraLinha(6, "  1 2 3 4 5 6\n").
 primeiraLinha(8, "  1 2 3 4 5 6 7 8\n").
 
-main:-
-	iniciarJogo,
-	halt(0).
 
 % Ler um número do teclado.
 leitura(X) :-
@@ -103,6 +110,20 @@ getElementMatrix(LINHA, COLUNA, [H|T], E):-
     getElement(LINHA, [H|T], LISTA),
     getElement(COLUNA, LISTA, AUX),
     E = AUX.
+
+rankingPrint:-
+    open('ranking.txt', read, Str),
+    printLinha(Str),
+    close(Str),
+    segundos(X),
+    cronometro(X, 10),
+    menu.
+printLinha(Stream):-
+    \+ at_end_of_stream(Stream) ->
+    read_line_to_string(Stream,X),
+    writeln(X),
+    printLinha(Stream);
+    true.
 
  % Retorna o elemento de determinada posição na Lista. 
 pegarElemPorIndice(0, [H|T], H) :- !.
@@ -224,12 +245,17 @@ pares(Tamanho, Pares):-
     Pares is (Tamanho * Tamanho) / 2.
 
 % Lógica do jogo.
-jogo(Pares, Tamanho, Nivel, ParesEcontrados, MatrizUsuario, MatrizSistema, Tempo):-
+jogo(Pares, Tamanho, Nivel, ParesEcontrados, MatrizUsuario, MatrizSistema, Tempo, Nome):-
     contarSegundos(Tempo, Agora),
-    Agora > 1000, !.
-jogo(Pares, Tamanho, Nivel, ParesEcontrados, MatrizUsuario, MatrizSistema, Tempo):-
-    ParesEcontrados =:= Pares.
-jogo(Pares, Tamanho, Nivel, ParesEcontrados, MatrizUsuario, MatrizSistema, Tempo):-
+    Agora > 180, !.
+jogo(Pares, Tamanho, Nivel, ParesEcontrados, MatrizUsuario, MatrizSistema, Tempo, Nome):-
+    ParesEcontrados =:= Pares,
+    contarSegundos(Tempo, Agora),
+    Temp is floor(Agora),
+    writeln(Temp),
+    gravaRanking(Nome, Temp).
+jogo(Pares, Tamanho, Nivel, ParesEcontrados, MatrizUsuario, MatrizSistema, Tempo, Nome):-
+    matrizRepresentacao(MatrizSistema, Tamanho),
     matrizRepresentacao(MatrizUsuario, Tamanho),
     getPares(Tamanho, MatrizUsuario, MatrizSistema, (Linha1, Coluna1), MatrizModificada),
     shell("clear"),
@@ -241,10 +267,12 @@ jogo(Pares, Tamanho, Nivel, ParesEcontrados, MatrizUsuario, MatrizSistema, Tempo
     shell("clear"),  
     ParesEcontradosAgora is (ParesEcontrados + 1),
     writeln(ParesEcontradosAgora),
-    jogo(Pares, Tamanho, Nivel, ParesEcontradosAgora, MatrizModificada2, MatrizSistema, Tempo);
-    shell("clear"),
+    jogo(Pares, Tamanho, Nivel, ParesEcontradosAgora, MatrizModificada2, MatrizSistema, Tempo, Nome);
+    segundos(T),
     writeln("Par escolhido diferente!!!"),
-    jogo(Pares, Tamanho, Nivel, ParesEcontrados, MatrizUsuario, MatrizSistema, Tempo).
+    cronometro(T, 5),
+    shell("clear"),
+    jogo(Pares, Tamanho, Nivel, ParesEcontrados, MatrizUsuario, MatrizSistema, Tempo, Nome).
      
 
 % Retorna uma posição escohida pelo usuário.
@@ -259,16 +287,85 @@ segundos(Segundos):-
     stamp_date_time(TimeStamp, date(_, _, _, _, Min, Seg, _, _, _), 0),
     Segundos is (Min * 60) + Seg.
 
+% Simula um cronômetro.
+cronometro(X, Tempo):-
+   contarSegundos(X, Y),
+   Y < Tempo -> cronometro(X, Tempo); true.
+
 % Retorna a diferença entre segundos.
 contarSegundos(Segundos, Total):-
     segundos(SegundosAgora),
     K is SegundosAgora,
     Total is (K - Segundos).
 
-iniciarJogo():-
-	criaMatriz(4, 4, MatrizUsuario),
-    gerarMatrizJogo(4, MatrizJogo),
-    pares(4, P),
-    segundos(T),
-    jogo(P, 4, 1, 0, MatrizUsuario, MatrizJogo, T) -> writeln("perdeu..."); writeln("ganhou."),
-    halt(0).
+%verifica se existe arquivo e criar e grava
+gravaRanking(Nome, Tempo) :-
+    exists_file('ranking.txt') ->
+    open('ranking.txt', read, Str),
+    NovoArquivo = "" ,
+    gerarNovoArquivo(Nome, Tempo, Str, 0,false, NovoArquivo, NovoArquivoGravar),
+    close(Str),
+    gravaArquivo(NovoArquivoGravar); 
+    open('ranking.txt', write, Str),
+    resultadoStringRanking(Nome, Tempo, NomeTempo),
+    write(Str, NomeTempo),
+    nl(Str),
+    close(Str).
+
+%abre o arquivo 
+gravaArquivo(Arquivo):-
+    open('ranking.txt', write, Str),
+    write(Str, Arquivo),
+    close(Str).
+
+%gerar o novo arquivo
+gerarNovoArquivo(Nome, Tempo, Stream, Contador, Gravou, NovoArquivo, NovoArquivoGravar) :-
+    \+ at_end_of_stream(Stream) , Contador < 5 ->
+    read_line_to_string(Stream,X),
+    split_string(X, " ", "", [H, H2 | T]),
+    segundosRanking(H2, Segs),
+    verificaTempo(Tempo, Segs, Nome, Gravou, Contador, Contador2, X, NovaLinha, Gravado),
+    string_concat(NovoArquivo, NovaLinha, NovoArquivoModificado),
+    gerarNovoArquivo(Nome, Tempo, Stream, Contador2, Gravado, NovoArquivoModificado, NovoArquivoGravar);
+    Contador < 5 , \+ Gravou-> resultadoStringRanking(Nome, Tempo, NomeTempo),
+    string_concat(NovoArquivo, NomeTempo, Novo),
+    NovoArquivoGravar = Novo;
+    NovoArquivoGravar = NovoArquivo.
+
+%verifica se o tempo é melhor do que o da linha
+verificaTempo(TempoNovo, TempoAtual, Nome, Gravou, Contador, Contador2, Linha, NovaLinha, Gravado):-
+    TempoNovo < TempoAtual , \+Gravou -> resultadoStringRanking(Nome, TempoNovo, TempoS),
+    Gravado = true,
+    Contador2 is Contador + 2,
+    string_concat(TempoS, "\n", Linha1),
+    string_concat(Linha1, Linha, Linha2),
+    string_concat(Linha2, "\n", NovaLinha);
+    Contador2 is Contador + 1,
+    Gravado = Gravou,
+    string_concat(Linha, "\n", NovaLinha).
+
+% criar string no formato do ranking
+resultadoStringRanking(Nome, Tempo, NomeTempo):-
+    Min is floor(Tempo / 60),
+    Seg is Tempo mod 60,
+    number_string(Min, Mins),
+    segundosString(Seg, Segs),
+    string_concat(Nome, ": ", N),
+    string_concat(Mins, "m", M),
+    string_concat(Segs, "s", S),
+    string_concat(M, S, TempoS),
+    string_concat(N, TempoS, NomeTempo).
+
+%converte os segundos para string
+segundosString(Seg, Segs):-
+    Seg < 10 -> number_string(Seg, Segundos),
+    string_concat("0", Segundos, Segs);
+    number_string(Seg, Segs).
+
+%converte de minutos e segundos, para segundos.
+segundosRanking(Tempo, Segundos) :-
+    split_string(Tempo, "m", "", [M, H2 | T]),
+    split_string(H2, "s", "", [S|T2]),
+    number_string(Min, M),
+    number_string(Seg, S),
+    Segundos is (Min * 60) + Seg.
